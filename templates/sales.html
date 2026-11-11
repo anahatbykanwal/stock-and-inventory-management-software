@@ -1,0 +1,1643 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>New Sale - SIMS</title>
+
+  </head>
+  <style>
+
+     /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+
+        :root {
+            /* Background Colors */
+            --bg-main: #f4f7f6;
+            --bg-sidebar: #1e1e2d;
+            --bg-header: #ffffff;
+            --bg-card: #ffffff;
+
+            /* Borders & Dividers */
+            --border-sidebar: #2b2b40;
+            --border-card: #ebedf3;
+            --border-header: #e4e6ef;
+
+            /* Text & Font Colors */
+            --text-main: #181c32;
+            --text-muted: #a2a3b7;
+            --text-dark: #3f4254;
+            --text-link: #b5b5c3;
+            --text-logo-sub: #787887;
+            --text-section-title: #474761;
+
+            /* Brand & Accent Colors */
+            --primary: #3699ff;
+            --primary-light: rgba(54, 153, 255, 0.1);
+
+            /* Status & Feedback Colors */
+            --success: #1bc5bd;
+            --danger: #f64e60;
+            --danger-light: rgba(246, 78, 96, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+
+         /* Sidebar Styling */
+                /* Sidebar Styling */
+        .sidebar {
+            background: var(--bg-sidebar);
+            color: var(--text-muted);
+            height: 100vh;
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-sidebar);
+            margin-bottom: 16px;
+        }
+
+        .logo h2 {
+            color: var(--bg-header);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            font-size: 11px;
+            color: var(--text-logo-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navigation {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 4px;
+        }
+
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-section-title);
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin: 10px 0 4px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-link);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-link span {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary);
+            color: var(--bg-header);
+            font-weight: 600;
+        }
+
+        .sidebar-bottom {
+            border-top: 1px solid var(--border-sidebar);
+        }
+
+        .nav-link.logout:hover {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+/* =========================================================
+   SALES PAGE
+   ========================================================= */
+
+.page-content {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex-grow: 1;
+    overflow-y: auto;
+    height: calc(100vh - 72px);
+    background: var(--bg-main);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.topbar {
+    height: 72px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-header);
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 0 30px;
+    flex-shrink: 0;
+}
+
+.menu-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+
+    background: var(--bg-main);
+    color: var(--text-dark);
+
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.menu-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+
+
+/* =========================================================
+   TOPBAR RIGHT
+   ========================================================= */
+
+.topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.notification-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+
+    background: var(--bg-main);
+    color: var(--text-dark);
+
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.notification-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    background: var(--primary);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-info strong {
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-info span {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.topbar h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.topbar p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.page-header h1 {
+    margin-bottom: 6px;
+    color: var(--text-main);
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   CONTENT CARD
+   ========================================================= */
+
+.content-card {
+    width: 100%;
+    background: var(--bg-card);
+
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+
+    padding: 26px;
+
+    box-shadow: 0 0 20px rgba(76, 87, 125, 0.02);
+}
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    margin-bottom: 5px;
+    color: var(--text-main);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FORM GROUPS
+   ========================================================= */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 0;
+}
+
+.form-group label {
+    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 44px;
+
+    padding: 0 13px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+
+    background: var(--bg-main);
+    color: var(--text-main);
+
+    outline: none;
+    font-size: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+
+
+
+
+
+
+
+
+
+/* REMOVE ITEM BUTTON */
+
+.action-btn.delete-btn {
+    padding: 7px 14px;
+    border: 1px solid rgba(246, 78, 96, 0.3);
+    border-radius: 8px;
+    background: rgba(246, 78, 96, 0.12);
+    color: #e84156;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.25s ease;
+}
+
+.action-btn.delete-btn:hover {
+    background: rgba(246, 78, 96, 0.22);
+    border-color: rgba(246, 78, 96, 0.55);
+    box-shadow: 0 4px 12px rgba(246, 78, 96, 0.15);
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   CUSTOMER SELECT
+   ========================================================= */
+
+#customerSelect {
+    max-width: 100%;
+    margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   PRODUCT ROW
+   ========================================================= */
+
+.sale-product-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 140px auto;
+    align-items: end;
+    gap: 16px;
+
+    padding: 20px;
+
+    background: var(--bg-main);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+
+    margin-bottom: 30px;
+}
+
+.quantity-group {
+    width: 100%;
+}
+
+.add-item-container {
+    display: flex;
+    align-items: flex-end;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.btn-primary {
+    min-height: 44px;
+    padding: 0 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+
+    background: var(--primary);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(54, 153, 255, 0.2);
+}
+
+
+/* =========================================================
+   SALE ITEMS SECTION
+   ========================================================= */
+
+.sale-items-section {
+    margin-top: 8px;
+}
+
+.sale-items-section .section-header {
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+
+    border: 1px solid var(--border-card);
+    border-radius: 9px;
+}
+
+.sale-table {
+    width: 100%;
+    min-width: 700px;
+
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.sale-table thead {
+    background: var(--bg-main);
+}
+
+.sale-table th {
+    padding: 14px;
+
+    border-bottom: 1px solid var(--border-card);
+
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+.sale-table td {
+    padding: 15px 14px;
+
+    border-bottom: 1px solid var(--border-card);
+
+    color: var(--text-dark);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.sale-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.sale-table tbody tr:hover {
+    background: #f8faff;
+}
+
+.sale-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    min-height: 150px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 24px;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SALE SUMMARY
+   ========================================================= */
+
+.sale-summary {
+    width: 100%;
+    max-width: 370px;
+
+    margin: 28px 0 0 auto;
+    padding: 22px;
+
+    background: var(--bg-main);
+
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+}
+
+.summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 18px;
+
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.summary-row strong {
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.discount-row {
+    align-items: center;
+}
+
+.discount-row label {
+    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.discount-row input {
+    width: 110px;
+    height: 38px;
+
+    padding: 0 10px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 7px;
+
+    background: var(--bg-card);
+    color: var(--text-main);
+
+    outline: none;
+    font-size: 13px;
+    text-align: right;
+}
+
+.discount-row input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+
+/* =========================================================
+   SUMMARY DIVIDER
+   ========================================================= */
+
+.summary-divider {
+    height: 1px;
+    width: 100%;
+
+    margin: 6px 0 20px;
+
+    background: var(--border-card);
+}
+
+
+/* =========================================================
+   GRAND TOTAL
+   ========================================================= */
+
+.summary-row.grand-total {
+    margin-bottom: 22px;
+}
+
+.grand-total span {
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.grand-total strong {
+    color: var(--primary);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   COMPLETE SALE BUTTON
+   ========================================================= */
+
+.complete-sale-btn {
+    width: 100%;
+    min-height: 46px;
+
+    padding: 12px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--primary);
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.complete-sale-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(54, 153, 255, 0.2);
+}
+
+.complete-sale-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   REMOVE ITEM BUTTON
+   Applies if your JavaScript uses this class
+   ========================================================= */
+
+.remove-item-btn {
+    border: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin: 2px;
+    backdrop-filter: blur(10px);
+}
+
+.remove-item-btn:hover {
+     background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+
+
+
+  </style>
+
+  <body>
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <h2>SIMS</h2>
+        <span>Smart Inventory</span>
+      </div>
+
+      <nav class="navigation">
+        <a href="/dashboard" class="nav-link">
+          <span>▣</span>
+          Dashboard
+        </a>
+
+        <div class="nav-section">
+          <p>Inventory</p>
+
+          <a href="/products" class="nav-link">
+            <span>▦</span>
+            Products
+          </a>
+
+          <a href="/categories" class="nav-link">
+            <span>▤</span>
+            Categories
+          </a>
+
+          <a href="/stock" class="nav-link">
+            <span>◈</span>
+            Stock
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <p>Sales</p>
+
+          <a href="/sales" class="nav-link active">
+            <span>＋</span>
+            New Sale
+          </a>
+
+          <a href="/sales-history" class="nav-link">
+            <span>▤</span>
+            Sales History
+          </a>
+        </div>
+
+        <a href="/customers" class="nav-link">
+          <span>♙</span>
+          Customers
+        </a>
+
+        <a href="/settings" class="nav-link">
+          <span>⚙</span>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="/logout" class="nav-link logout">
+          <span>↪</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+      <!-- TOPBAR -->
+
+      <header class="topbar">
+        <div>
+          <h1>Sales</h1>
+          <p>Manage your business sales</p>
+          </div>
+        <div class="topbar-right">
+
+          <div class="user-area">
+            <div class="avatar">{{ full_name[0].upper() }}</div>
+
+            <div class="user-info">
+              <strong> {{ full_name }} </strong>
+              <span> Administrator </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================
+             PAGE CONTENT
+        ========================== -->
+
+      <div class="page-content">
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+          <div>
+            <h1>New Sale</h1>
+
+            <p>Create a new customer sale</p>
+          </div>
+        </div>
+
+        <!-- =========================
+                 SALE FORM
+            ========================== -->
+
+        <section class="content-card">
+          <div class="section-header">
+            <div>
+              <h2>Sale Information</h2>
+
+              <p>Select customer and add products</p>
+            </div>
+          </div>
+
+          <!-- CUSTOMER -->
+
+          <div class="form-group">
+            <label for="customerSelect"> Customer </label>
+
+            <select id="customerSelect">
+              <option value="">Walk-in Customer</option>
+            </select>
+          </div>
+
+          <!-- PRODUCT AREA -->
+
+          <div class="sale-product-row">
+            <div class="form-group">
+              <label for="productSelect"> Product </label>
+
+              <select id="productSelect">
+                <option value="">Select Product</option>
+              </select>
+            </div>
+
+            <div class="form-group quantity-group">
+              <label for="quantity"> Quantity </label>
+
+              <input
+                type="number"
+                id="quantity"
+                min="1"
+                value="1"
+                placeholder="Quantity"
+              />
+            </div>
+
+            <div class="add-item-container">
+              <button type="button" class="btn-primary" id="addItemBtn">
+                + Add Item
+              </button>
+            </div>
+          </div>
+
+          <!-- =========================
+                     SALE ITEMS
+                ========================== -->
+
+          <div class="sale-items-section">
+            <div class="section-header">
+              <div>
+                <h2>Sale Items</h2>
+
+                <p>Products added to this sale</p>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="sale-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+
+                    <th>SKU</th>
+
+                    <th>Quantity</th>
+
+                    <th>Unit Price</th>
+
+                    <th>Subtotal</th>
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody id="saleItemsTableBody">
+                  <tr id="emptySaleRow">
+                    <td colspan="6">
+                      <div class="empty-state">
+                        <div class="empty-icon">＋</div>
+
+                        <p>No products added yet.</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- =========================
+                     SALE SUMMARY
+                ========================== -->
+
+          <div class="sale-summary">
+            <div class="summary-row">
+              <span> Subtotal </span>
+
+              <strong id="subtotal"> 0.00 </strong>
+            </div>
+
+            <div class="summary-row discount-row">
+              <label for="discount"> Discount (%) </label>
+
+              <input
+                type="number"
+                id="discount"
+                min="0"
+                max="100"
+                value="0"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row grand-total">
+              <span> Grand Total </span>
+
+              <strong id="grandTotal"> 0.00 </strong>
+            </div>
+
+            <button
+              type="button"
+              class="complete-sale-btn"
+              id="completeSaleBtn"
+            >
+              Complete Sale
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+  <script>
+    // ===============================
+// SIMS NEW SALE PAGE
+// ===============================
+
+// ===============================
+// DOM ELEMENTS
+// ===============================
+
+const customerSelect = document.getElementById("customerSelect");
+const productSelect = document.getElementById("productSelect");
+const quantityInput = document.getElementById("quantity");
+
+const addItemBtn = document.getElementById("addItemBtn");
+
+const saleItemsTableBody = document.getElementById("saleItemsTableBody");
+
+const subtotalElement = document.getElementById("subtotal");
+
+const discountInput = document.getElementById("discount");
+
+const grandTotalElement = document.getElementById("grandTotal");
+
+const completeSaleBtn = document.getElementById("completeSaleBtn");
+
+// ===============================
+// SIDEBAR
+// ===============================
+
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+if (menuBtn && sidebar) {
+  menuBtn.addEventListener("click", function () {
+    sidebar.classList.toggle("show");
+  });
+}
+
+// ===============================
+// DATA
+// ===============================
+
+let customers = [];
+let products = [];
+let saleItems = [];
+
+// ===============================
+// LOAD CUSTOMERS
+// ===============================
+
+async function loadCustomers() {
+  try {
+    const response = await fetch("/api/customers");
+
+    if (!response.ok) {
+      throw new Error("Failed to load customers.");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to load customers.");
+    }
+
+    customers = result.customers || [];
+
+    customerSelect.innerHTML = `
+            <option value="">
+                Walk-in Customer
+            </option>
+        `;
+
+    customers.forEach(function (customer) {
+      const option = document.createElement("option");
+
+      option.value = customer.id;
+
+      option.textContent = `${customer.customer_name} - ${customer.phone || "No phone"}`;
+
+      customerSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Customer loading error:", error);
+
+    alert("Failed to load customers.");
+  }
+}
+
+// ===============================
+// LOAD PRODUCTS
+// ===============================
+
+async function loadProducts() {
+  try {
+    const response = await fetch("/api/products");
+
+    if (!response.ok) {
+      throw new Error("Failed to load products.");
+    }
+
+    const result = await response.json();
+
+    if (Array.isArray(result)) {
+      products = result;
+    } else if (result.success) {
+      products = result.products || [];
+    } else {
+      throw new Error(result.message || "Failed to load products.");
+    }
+
+    populateProductSelect();
+  } catch (error) {
+    console.error("Product loading error:", error);
+
+    alert("Failed to load products.");
+  }
+}
+
+// ===============================
+// POPULATE PRODUCT DROPDOWN
+// ===============================
+
+function populateProductSelect() {
+  productSelect.innerHTML = `
+        <option value="">
+            Select Product
+        </option>
+    `;
+
+  products.forEach(function (product) {
+    const stock = Number(product.stock_quantity || 0);
+
+    const option = document.createElement("option");
+
+    option.value = product.id;
+
+    option.textContent = `${product.product_name} | ${product.sku} | Stock: ${stock}`;
+
+    if (stock <= 0) {
+      option.disabled = true;
+    }
+
+    productSelect.appendChild(option);
+  });
+}
+
+// ===============================
+// PRODUCT SELECTION
+// ===============================
+
+productSelect.addEventListener("change", function () {
+  const selectedProductId = Number(productSelect.value);
+
+  const product = products.find(function (item) {
+    return Number(item.id) === selectedProductId;
+  });
+
+  if (!product) {
+    quantityInput.value = 1;
+
+    return;
+  }
+
+  const stock = Number(product.stock_quantity || 0);
+
+  if (stock <= 0) {
+    alert("This product is out of stock.");
+
+    productSelect.value = "";
+
+    quantityInput.value = 1;
+
+    return;
+  }
+
+  quantityInput.value = 1;
+
+  quantityInput.max = stock;
+});
+
+// ===============================
+// ADD ITEM
+// ===============================
+
+addItemBtn.addEventListener("click", function () {
+  addSaleItem();
+});
+
+function addSaleItem() {
+  const productId = Number(productSelect.value);
+
+  const quantity = Number(quantityInput.value);
+
+  // ===========================
+  // VALIDATION
+  // ===========================
+
+  if (!productId) {
+    alert("Please select a product.");
+
+    return;
+  }
+
+  if (!quantity || quantity <= 0) {
+    alert("Please enter a valid quantity.");
+
+    return;
+  }
+
+  // ===========================
+  // FIND PRODUCT
+  // ===========================
+
+  const product = products.find(function (item) {
+    return Number(item.id) === productId;
+  });
+
+  if (!product) {
+    alert("Product not found.");
+
+    return;
+  }
+
+  const availableStock = Number(product.stock_quantity || 0);
+
+  // ===========================
+  // STOCK CHECK
+  // ===========================
+
+  if (quantity > availableStock) {
+    alert(
+      `Only ${availableStock} units of ${product.product_name} are available.`,
+    );
+
+    return;
+  }
+
+  // ===========================
+  // CHECK EXISTING ITEM
+  // ===========================
+
+  const existingItem = saleItems.find(function (item) {
+    return item.product_id === productId;
+  });
+
+  if (existingItem) {
+    const newQuantity = existingItem.quantity + quantity;
+
+    if (newQuantity > availableStock) {
+      alert(
+        `You cannot add more than ${availableStock} units of ${product.product_name}.`,
+      );
+
+      return;
+    }
+
+    existingItem.quantity = newQuantity;
+
+    existingItem.subtotal = newQuantity * existingItem.unit_price;
+  } else {
+    const unitPrice = Number(product.selling_price || 0);
+
+    saleItems.push({
+      product_id: product.id,
+
+      product_name: product.product_name,
+
+      sku: product.sku,
+
+      quantity: quantity,
+
+      unit_price: unitPrice,
+
+      subtotal: quantity * unitPrice,
+    });
+  }
+
+  // ===========================
+  // UPDATE UI
+  // ===========================
+
+  renderSaleItems();
+
+  calculateTotals();
+
+  // ===========================
+  // RESET PRODUCT INPUT
+  // ===========================
+
+  productSelect.value = "";
+
+  quantityInput.value = 1;
+
+  quantityInput.removeAttribute("max");
+}
+
+// ===============================
+// RENDER SALE ITEMS
+// ===============================
+
+function renderSaleItems() {
+  saleItemsTableBody.innerHTML = "";
+
+  // ===========================
+  // EMPTY SALE
+  // ===========================
+
+  if (saleItems.length === 0) {
+    saleItemsTableBody.innerHTML = `
+            <tr>
+
+                <td colspan="6">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ＋
+                        </div>
+
+                        <p>
+                            No products added yet.
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+    return;
+  }
+
+  // ===========================
+  // SALE ITEMS
+  // ===========================
+
+  saleItems.forEach(function (item, index) {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+
+            <td>
+                <strong>
+                    ${escapeHTML(item.product_name)}
+                </strong>
+            </td>
+
+            <td>
+                ${escapeHTML(item.sku)}
+            </td>
+
+            <td>
+                ${item.quantity}
+            </td>
+
+            <td>
+                ${item.unit_price.toFixed(2)}
+            </td>
+
+            <td>
+                ${item.subtotal.toFixed(2)}
+            </td>
+
+            <td>
+
+                <button
+                    type="button"
+                    class="action-btn delete-btn"
+                    onclick="removeSaleItem(${index})"
+                >
+                    Remove
+                </button>
+
+            </td>
+
+        `;
+
+    saleItemsTableBody.appendChild(row);
+  });
+}
+
+// ===============================
+// REMOVE SALE ITEM
+// ===============================
+
+function removeSaleItem(index) {
+  if (index < 0 || index >= saleItems.length) {
+    return;
+  }
+
+  saleItems.splice(index, 1);
+
+  renderSaleItems();
+
+  calculateTotals();
+}
+
+// ===============================
+// DISCOUNT
+// ===============================
+
+discountInput.addEventListener("input", calculateTotals);
+
+// ===============================
+// CALCULATE TOTALS
+// ===============================
+function calculateTotals() {
+  const subtotal = saleItems.reduce(function (total, item) {
+    return total + item.subtotal;
+  }, 0);
+
+  let discountPercentage = Number(discountInput.value || 0);
+
+  // Discount cannot be negative
+
+  if (discountPercentage < 0) {
+    discountPercentage = 0;
+
+    discountInput.value = 0;
+  }
+
+  // Discount cannot be more than 100%
+
+  if (discountPercentage > 100) {
+    discountPercentage = 100;
+
+    discountInput.value = 100;
+  }
+
+  // Calculate discount amount
+
+  const discountAmount = subtotal * (discountPercentage / 100);
+
+  // Calculate final amount
+
+  const grandTotal = subtotal - discountAmount;
+
+  subtotalElement.textContent = subtotal.toFixed(2);
+
+  grandTotalElement.textContent = grandTotal.toFixed(2);
+
+  completeSaleBtn.disabled = saleItems.length === 0;
+}
+
+// ===============================
+// COMPLETE SALE
+// ===============================
+
+completeSaleBtn.addEventListener("click", completeSale);
+async function completeSale() {
+  if (saleItems.length === 0) {
+    alert("Please add at least one product.");
+
+    return;
+  }
+
+  const customerId = customerSelect.value ? Number(customerSelect.value) : null;
+
+  const subtotal = saleItems.reduce(function (total, item) {
+    return total + item.subtotal;
+  }, 0);
+
+  // Discount entered by user as percentage
+  const discountPercentage = Number(discountInput.value || 0);
+
+  // Convert percentage into actual money amount
+  const discountAmount = subtotal * (discountPercentage / 100);
+
+  const finalAmount = subtotal - discountAmount;
+
+  // ===============================
+  // SALE DATA
+  // ===============================
+
+  const saleData = {
+    customer_id: customerId,
+
+    total_amount: subtotal,
+
+    discount: discountAmount,
+
+    final_amount: finalAmount,
+
+    items: saleItems.map(function (item) {
+      return {
+        product_id: item.product_id,
+
+        quantity: item.quantity,
+
+        unit_price: item.unit_price,
+
+        subtotal: item.subtotal,
+      };
+    }),
+  };
+
+  console.log("Sending sale data:", saleData);
+
+  try {
+    completeSaleBtn.disabled = true;
+
+    completeSaleBtn.textContent = "Processing...";
+
+    // ===============================
+    // SEND DATA TO FLASK
+    // ===============================
+
+    const response = await fetch("/api/sales", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify(saleData),
+    });
+
+    const result = await response.json();
+
+    console.log("Flask response:", result);
+
+    // ===============================
+    // CHECK RESPONSE
+    // ===============================
+
+    if (!response.ok || !result.success) {
+      alert(result.message || "Failed to complete sale.");
+
+      return;
+    }
+
+    // ===============================
+    // SUCCESS
+    // ===============================
+
+    alert(`Sale completed successfully!\n\nSale ID: ${result.sale_id}`);
+
+    // Go to Sales History
+
+    window.location.href = "/sales-history";
+  } catch (error) {
+    console.error("Complete sale error:", error);
+
+    alert("Something went wrong while completing the sale.");
+  } finally {
+    completeSaleBtn.disabled = saleItems.length === 0;
+
+    completeSaleBtn.textContent = "Complete Sale";
+  }
+}
+// ===============================
+// ESCAPE HTML
+// ===============================
+
+function escapeHTML(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+
+    .replace(/</g, "&lt;")
+
+    .replace(/>/g, "&gt;")
+
+    .replace(/"/g, "&quot;")
+
+    .replace(/'/g, "&#039;");
+}
+
+// ===============================
+// INITIALIZE
+// ===============================
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadCustomers();
+
+  loadProducts();
+
+  calculateTotals();
+});
+
+  </script>
+  </body>
+
+</html>

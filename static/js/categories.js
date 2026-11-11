@@ -19,9 +19,9 @@ function closeCategoryModal() {
   categoryElement("categoryModal").classList.remove("active");
   categoryElement("categoryForm").reset();
   categoryElement("categoryId").value = "";
-  categoryState.editingId = null;
-  categoryElement("modalTitle").textContent = "Add Category";
-  categoryElement("saveCategoryBtn").textContent = "Add Category";
+  categoryState.editingId = null; 
+  categoryElement("modalTitle").textContent = "AddCategory";
+  categoryElement("saveCategoryBtn").textContent = "AddCategory";
 }
 
 function renderCategories() {
@@ -148,8 +148,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       categoryElement("categoryName").value = category.name;
       categoryElement("categoryDescription").value = category.description || "";
       categoryElement("categoryStatus").value = category.status;
-      categoryElement("modalTitle").textContent = "Edit Category";
-      categoryElement("saveCategoryBtn").textContent = "Save Changes";
+      categoryElement("modalTitle").textContent = "EditCategory";
+      categoryElement("saveCategoryBtn").textContent = "SaveChanges";
       categoryElement("categoryModal").classList.add("active");
     }
     if (event.target.classList.contains("delete-category")) {

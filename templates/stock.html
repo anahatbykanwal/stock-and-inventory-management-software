@@ -1,0 +1,2004 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Stock Management - SIMS</title>
+    <!-- <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/stock.css') }}"
+    /> -->
+    <style>/* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+
+        :root {
+            /* Background Colors */
+            --bg-main: #f4f7f6;
+            --bg-sidebar: #1e1e2d;
+            --bg-header: #ffffff;
+            --bg-card: #ffffff;
+
+            /* Borders & Dividers */
+            --border-sidebar: #2b2b40;
+            --border-card: #ebedf3;
+            --border-header: #e4e6ef;
+
+            /* Text & Font Colors */
+            --text-main: #181c32;
+            --text-muted: #a2a3b7;
+            --text-dark: #3f4254;
+            --text-link: #b5b5c3;
+            --text-logo-sub: #787887;
+            --text-section-title: #474761;
+
+            /* Brand & Accent Colors */
+            --primary: #3699ff;
+            --primary-light: rgba(54, 153, 255, 0.1);
+
+            /* Status & Feedback Colors */
+            --success: #1bc5bd;
+            --danger: #f64e60;
+            --danger-light: rgba(246, 78, 96, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+                /* Sidebar Styling */
+        .sidebar {
+            background: var(--bg-sidebar);
+            color: var(--text-muted);
+            height: 100vh;
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-sidebar);
+            margin-bottom: 16px;
+        }
+
+        .logo h2 {
+            color: var(--bg-header);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo span {
+            font-size: 11px;
+            color: var(--text-logo-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navigation {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 4px;
+        }
+
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-section-title);
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin: 10px 0 4px 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-link);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-link span {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary);
+            color: var(--bg-header);
+            font-weight: 600;
+        }
+
+        .sidebar-bottom {
+            border-top: 1px solid var(--border-sidebar);
+        }
+
+        .nav-link.logout:hover {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+   STOCK MANAGEMENT PAGE
+   ========================================================= */
+
+.page-content {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%;
+    background: var(--bg-main);
+}
+
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.topbar {
+    height: 72px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-header);
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    padding: 0 30px;
+}
+
+.menu-btn {
+    width: 40px;
+    height: 40px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--bg-main);
+    color: var(--text-dark);
+
+    font-size: 20px;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.menu-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+
+/* =========================================================
+   TOPBAR SEARCH
+   ========================================================= */
+
+.topbar .search-box {
+    flex: 1;
+    max-width: 420px;
+}
+
+.topbar .search-box input {
+    width: 100%;
+    height: 42px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+
+    padding: 0 15px;
+
+    background: var(--bg-main);
+    color: var(--text-main);
+
+    outline: none;
+    font-size: 13px;
+
+    transition: 0.2s ease;
+}
+
+.topbar .search-box input:focus {
+    border-color: var(--primary);
+    background: white;
+}
+
+
+/* =========================================================
+   TOPBAR RIGHT
+   ========================================================= */
+
+.topbar-right {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+
+
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-info strong {
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.user-info span {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.topbar h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.topbar p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.page-header h1 {
+    margin-bottom: 5px;
+
+    color: var(--text-main);
+
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   STATISTICS GRID
+   ========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   STAT CARD
+   ========================================================= */
+
+.stat-card {
+    background: var(--bg-card);
+
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+
+    padding: 20px;
+
+    min-height: 150px;
+
+    box-shadow: 0 0 20px rgba(76, 87, 125, 0.02);
+
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 20px rgba(76, 87, 125, 0.06);
+}
+
+.stat-top {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   STAT ICON
+   ========================================================= */
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 21px;
+}
+
+.stat-icon.warning {
+    background: rgba(255, 168, 0, 0.12);
+    color: #ffa800;
+}
+
+.stat-icon.danger {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+
+/* TOTAL STOCK */
+
+.stat-card:nth-child(2) .stat-icon {
+    background: rgba(27, 197, 189, 0.12);
+    color: var(--success);
+}
+
+
+/* =========================================================
+   STAT CONTENT
+   ========================================================= */
+
+.stat-card h2 {
+    margin-bottom: 4px;
+
+    color: var(--text-main);
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.stat-card p {
+    color: var(--text-muted);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   STOCK CARD
+   ========================================================= */
+
+.stock-card {
+    background: var(--bg-card);
+
+    border: 1px solid var(--border-card);
+    border-radius: 12px;
+
+    padding: 24px;
+
+    box-shadow: 0 0 20px rgba(76, 87, 125, 0.02);
+}
+
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.stock-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.stock-card .card-header h2 {
+    margin-bottom: 4px;
+
+    color: var(--text-main);
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.stock-card .card-header p {
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   STOCK SEARCH
+   ========================================================= */
+
+.stock-search {
+    width: 280px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 13px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+
+    background: var(--bg-main);
+
+    transition: all 0.2s ease;
+}
+
+.stock-search:focus-within {
+    border-color: var(--primary);
+
+    background: white;
+
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.stock-search span {
+    color: var(--text-muted);
+    font-size: 19px;
+}
+
+.stock-search input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--text-main);
+
+    font-size: 13px;
+}
+
+.stock-search input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* =========================================================
+   CATEGORY FILTER
+   ========================================================= */
+
+#categoryFilter {
+    width: 180px;
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+
+    background: var(--bg-main);
+
+    color: var(--text-dark);
+
+    font-size: 13px;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+#categoryFilter:focus {
+    border-color: var(--primary);
+
+    background: white;
+
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid var(--border-card);
+    border-radius: 9px;
+}
+
+.table-container table {
+    width: 100%;
+
+    min-width: 900px;
+
+    border-collapse: collapse;
+
+    text-align: left;
+}
+
+.table-container thead {
+    background: var(--bg-main);
+}
+
+.table-container th {
+    padding: 13px 14px;
+
+    border-bottom: 1px solid var(--border-card);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    white-space: nowrap;
+}
+
+.table-container td {
+    padding: 14px;
+
+    border-bottom: 1px solid var(--border-card);
+
+    color: var(--text-dark);
+
+    font-size: 13px;
+
+    vertical-align: middle;
+}
+
+.table-container tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table-container tbody tr:hover {
+    background: #f8faff;
+}
+
+.table-container tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING STATE
+   ========================================================= */
+
+.empty-state {
+    min-height: 190px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    text-align: center;
+
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 22px;
+}
+
+.empty-state p {
+    margin: 0;
+
+    color: var(--text-dark);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   STOCK STATUS
+   ========================================================= */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-in-stock {
+    background: rgba(27, 197, 189, 0.12);
+    color: var(--success);
+}
+
+.status-low-stock {
+    background: rgba(255, 168, 0, 0.12);
+    color: #ffa800;
+}
+
+.status-out-of-stock {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+   ========================================================= */
+
+.stock-action-btn.stock-in{
+    padding: 7px 11px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+.stock-action-btn.stock-out {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.stock-action-btn.stock-out {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.stock-action-btn.stock-in:hover {
+    background: var(--primary);
+    color: white;
+}
+
+
+/* =========================================================
+   STOCK MODAL
+   ========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(24, 28, 50, 0.45);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+
+    backdrop-filter: blur(3px);
+}
+
+.modal.show {
+    display: flex;
+}
+
+
+/* =========================================================
+   MODAL CONTENT
+   ========================================================= */
+
+.modal-content {
+    width: 100%;
+    max-width: 520px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: var(--bg-card);
+
+    border-radius: 14px;
+
+    border: 1px solid var(--border-card);
+
+    box-shadow: 0 20px 50px rgba(24, 28, 50, 0.18);
+
+    animation: stockModalOpen 0.2s ease;
+}
+
+
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.modal-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: 24px;
+
+    border-bottom: 1px solid var(--border-card);
+}
+
+.modal-header h2 {
+    margin-bottom: 4px;
+
+    color: var(--text-main);
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.modal-header p {
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.close-btn {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--bg-main);
+
+    color: var(--text-muted);
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.close-btn:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+
+
+
+/* =========================================
+   GLASS EFFECT - STOCK IN / STOCK OUT
+   ========================================= */
+
+.stock-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    padding: 8px 13px;
+    margin: 3px;
+
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 8px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition: all 0.3s ease;
+}
+
+/* STOCK IN - Blue Glass */
+
+.stock-action.stock-in {
+    background: rgba(54, 153, 255, 0.13);
+    color: #2585e8;
+
+    border: 1px solid rgba(54, 153, 255, 0.3);
+
+    box-shadow:
+        0 4px 12px rgba(54, 153, 255, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.stock-action.stock-in:hover {
+    background: rgba(54, 153, 255, 0.23);
+
+    border-color: rgba(54, 153, 255, 0.55);
+
+    box-shadow:
+        0 6px 18px rgba(54, 153, 255, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+
+    transform: translateY(-2px);
+}
+
+/* STOCK OUT - Red Glass */
+
+.stock-action.stock-out {
+    background: rgba(246, 78, 96, 0.12);
+    color: #e84156;
+
+    border: 1px solid rgba(246, 78, 96, 0.3);
+
+    box-shadow:
+        0 4px 12px rgba(246, 78, 96, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.stock-action.stock-out:hover {
+    background: rgba(246, 78, 96, 0.22);
+
+    border-color: rgba(246, 78, 96, 0.55);
+
+    box-shadow:
+        0 6px 18px rgba(246, 78, 96, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+
+    transform: translateY(-2px);
+}
+
+/* Click Effect */
+
+.stock-action:active {
+    transform: scale(0.97);
+}
+
+/* Disabled State */
+
+.stock-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================================================
+   MODAL BODY
+   ========================================================= */
+
+.modal-body {
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 17px;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.modal-body .form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.modal-body .form-group label {
+    color: var(--text-dark);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.modal-body .form-group input {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 13px;
+
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+
+    background: var(--bg-main);
+
+    color: var(--text-main);
+
+    outline: none;
+
+    font-size: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.modal-body .form-group input:focus {
+    border-color: var(--primary);
+
+    background: white;
+
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.modal-body .form-group input[readonly] {
+    background: #f0f3f7;
+
+    color: var(--text-muted);
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MODAL FOOTER
+   ========================================================= */
+
+.modal-footer {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 18px 24px;
+
+    border-top: 1px solid var(--border-card);
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+.cancel-btn {
+    height: 40px;
+
+    padding: 0 18px;
+
+    border: 1px solid var(--border-card);
+
+    border-radius: 8px;
+
+    background: var(--bg-main);
+
+    color: var(--text-dark);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background: #eef0f5;
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+   ========================================================= */
+
+.save-btn {
+    height: 40px;
+
+    padding: 0 20px;
+
+    border: 1px solid var(--primary);
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+    opacity: 0.9;
+
+    box-shadow: 0 4px 10px rgba(54, 153, 255, 0.2);
+}
+
+        </style>
+  </head>
+  
+
+  <body>
+    <!-- =========================
+     SIDEBAR
+========================= -->
+
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <h2>SIMS</h2>
+        <span>Smart Inventory</span>
+      </div>
+
+      <nav class="navigation">
+        <a href="/dashboard" class="nav-link">
+          <span>▣</span>
+          Dashboard
+        </a>
+
+        <div class="nav-section">
+          <p>Inventory</p>
+
+          <a href="/products" class="nav-link">
+            <span>▦</span>
+            Products
+          </a>
+
+          <a href="/categories" class="nav-link">
+            <span>▤</span>
+            Categories
+          </a>
+
+          <a href="/stock" class="nav-link active">
+            <span>◈</span>
+            Stock
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <p>Sales</p>
+
+          <a href="/sales" class="nav-link">
+            <span>＋</span>
+            New Sale
+          </a>
+
+          <a href="/sales-history" class="nav-link">
+            <span>▤</span>
+            Sales History
+          </a>
+        </div>
+
+        <a href="/customers" class="nav-link">
+          <span>♙</span>
+          Customers
+        </a>
+
+        <a href="/settings" class="nav-link">
+          <span>⚙</span>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="/logout" class="nav-link logout">
+          <span>↪</span>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- =========================
+     MAIN CONTENT
+========================= -->
+
+    <main class="main-content">
+      <!-- TOPBAR -->
+
+      <header class="topbar">
+
+
+        <div>
+          <h1>Stock</h1>
+          <p>Manage your business product Stock</p>
+          </div>
+
+        <div class="topbar-right">
+
+          <div class="user-area">
+            <div class="avatar">{{ full_name[0].upper() }}</div>
+
+            <div class="user-info">
+              <strong>{{ full_name }}</strong>
+
+              <span>Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================
+         PAGE CONTENT
+    ========================= -->
+
+      <div class="page-content">
+        <!-- PAGE HEADER -->
+
+        <section class="page-header">
+          <div>
+            <h1>Stock Management</h1>
+
+            <p>Monitor your product inventory and stock levels.</p>
+          </div>
+        </section>
+
+        <!-- =========================
+             SUMMARY CARDS
+        ========================= -->
+
+        <section class="stats-grid">
+          <!-- TOTAL PRODUCTS -->
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon">▦</div>
+            </div>
+
+            <h2 id="totalProducts">0</h2>
+
+            <p>Total Products</p>
+          </div>
+
+          <!-- TOTAL STOCK -->
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon">◈</div>
+            </div>
+
+            <h2 id="totalStock">0</h2>
+
+            <p>Total Stock Units</p>
+          </div>
+
+          <!-- LOW STOCK -->
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon warning">⚠</div>
+            </div>
+
+            <h2 id="lowStock">0</h2>
+
+            <p>Low Stock Products</p>
+          </div>
+
+          <!-- OUT OF STOCK -->
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon danger">×</div>
+            </div>
+
+            <h2 id="outOfStock">0</h2>
+
+            <p>Out of Stock</p>
+          </div>
+        </section>
+
+        <!-- =========================
+             STOCK TABLE CARD
+        ========================= -->
+
+        <section class="stock-card">
+          <!-- CARD HEADER -->
+
+          <div class="card-header">
+            <div>
+              <h2>Stock Overview</h2>
+
+              <p>View and manage current product stock.</p>
+            </div>
+          </div>
+
+          <!-- FILTERS -->
+
+          <div class="filters">
+            <div class="stock-search">
+              <span>⌕</span>
+
+              <input
+                type="text"
+                id="searchStock"
+                placeholder="Search product or SKU..."
+              />
+            </div>
+
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+
+          <!-- TABLE -->
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+
+                  <th>Product</th>
+
+                  <th>SKU</th>
+
+                  <th>Category</th>
+
+                  <th>Current Stock</th>
+
+                  <th>Minimum Stock</th>
+
+                  <th>Status</th>
+
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody id="stockTableBody">
+                <tr>
+                  <td colspan="8">
+                    <div class="empty-state">
+                      <div class="empty-icon">◈</div>
+
+                      <p>Loading stock...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- =========================
+     STOCK MODAL
+========================= -->
+
+    <div class="modal" id="stockModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div>
+            <h2 id="stockModalTitle">Stock Adjustment</h2>
+
+            <p>Update product inventory</p>
+          </div>
+
+          <button class="close-btn" onclick="closeStockModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label> Product </label>
+
+            <input type="text" id="stockProductName" readonly />
+          </div>
+
+          <div class="form-group">
+            <label> Current Stock </label>
+
+            <input type="number" id="currentStock" readonly />
+          </div>
+
+          <div class="form-group">
+            <label> Quantity </label>
+
+            <input
+              type="number"
+              id="stockQuantity"
+              min="1"
+              placeholder="Enter quantity"
+            />
+          </div>
+
+          <input type="hidden" id="stockProductId" />
+
+          <input type="hidden" id="stockActionType" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="cancel-btn" onclick="closeStockModal()">
+            Cancel
+          </button>
+
+          <button type="button" class="save-btn" id="saveStockBtn">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+  <script>
+// =========================
+// Stock Management
+// =========================
+
+// =========================
+// DOM Elements
+// =========================
+
+const stockTableBody = document.getElementById("stockTableBody");
+
+const searchStock = document.getElementById("searchStock");
+
+const categoryFilter = document.getElementById("categoryFilter");
+
+const totalProducts = document.getElementById("totalProducts");
+
+const totalStock = document.getElementById("totalStock");
+
+const lowStock = document.getElementById("lowStock");
+
+const outOfStock = document.getElementById("outOfStock");
+
+// =========================
+// Stock Modal Elements
+// =========================
+
+const stockModalElement = document.getElementById("stockModal");
+
+const stockProductId = document.getElementById("stockProductId");
+
+const stockProductName = document.getElementById("stockProductName");
+
+const currentStock = document.getElementById("currentStock");
+
+const stockQuantity = document.getElementById("stockQuantity");
+
+const stockActionType = document.getElementById("stockActionType");
+
+const stockModalTitle = document.getElementById("stockModalTitle");
+
+const saveStockBtn = document.getElementById("saveStockBtn");
+
+// =========================
+// Sidebar Elements
+// =========================
+
+const sidebar = document.getElementById("sidebar");
+
+const menuBtn = document.getElementById("menuBtn");
+
+// =========================
+// Store All Stock Data
+// =========================
+
+let stockData = [];
+
+// =========================
+// Sidebar Toggle
+// =========================
+
+if (menuBtn && sidebar) {
+  menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+  });
+}
+
+// =========================
+// Load Stock
+// =========================
+
+async function loadStock() {
+  try {
+    const response = await fetch("/api/stock");
+
+    if (!response.ok) {
+      throw new Error("Failed to load stock");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to load stock");
+    }
+
+    stockData = result.stock;
+
+    updateStats(stockData);
+
+    renderStock(stockData);
+  } catch (error) {
+    console.error("Error loading stock:", error);
+
+    stockTableBody.innerHTML = `
+            <tr>
+                <td colspan="8">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            !
+                        </div>
+
+                        <p>
+                            Failed to load stock.
+                        </p>
+
+                    </div>
+
+                </td>
+            </tr>
+        `;
+  }
+}
+
+// =========================
+// Update Statistics
+// =========================
+
+function updateStats(products) {
+  // Total Products
+
+  totalProducts.textContent = products.length;
+
+  // Total Stock Units
+
+  const stockUnits = products.reduce(
+    (total, product) => total + Number(product.stock_quantity),
+    0,
+  );
+
+  totalStock.textContent = stockUnits;
+
+  // Low Stock
+
+  const lowStockProducts = products.filter((product) => {
+    return (
+      Number(product.stock_quantity) > 0 &&
+      Number(product.stock_quantity) <= Number(product.minimum_stock)
+    );
+  });
+
+  lowStock.textContent = lowStockProducts.length;
+
+  // Out Of Stock
+
+  const outOfStockProducts = products.filter((product) => {
+    return Number(product.stock_quantity) === 0;
+  });
+
+  outOfStock.textContent = outOfStockProducts.length;
+}
+
+// =========================
+// Render Stock Table
+// =========================
+
+function renderStock(products) {
+  stockTableBody.innerHTML = "";
+
+  // No Products
+
+  if (products.length === 0) {
+    stockTableBody.innerHTML = `
+            <tr>
+
+                <td colspan="8">
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ◈
+                        </div>
+
+                        <p>
+                            No products found.
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+    return;
+  }
+
+  // Render Products
+
+  products.forEach((product, index) => {
+    const status = getStockStatus(product);
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+
+            <td>
+                ${index + 1}
+            </td>
+
+
+            <td>
+
+                <strong>
+                    ${product.product_name}
+                </strong>
+
+            </td>
+
+
+            <td>
+                ${product.sku}
+            </td>
+
+
+            <td>
+                ${product.category_name}
+            </td>
+
+
+            <td>
+
+                <span class="stock-number">
+                    ${product.stock_quantity}
+                </span>
+
+            </td>
+
+
+            <td>
+                ${product.minimum_stock}
+            </td>
+
+
+            <td>
+
+                <span class="status-badge ${status.className}">
+                    ${status.text}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <button
+                    class="stock-action stock-in"
+                    onclick="openStockModal(
+                        ${product.id},
+                        '${escapeProductName(product.product_name)}',
+                        ${product.stock_quantity},
+                        'in'
+                    )"
+                >
+                    + Stock In
+                </button>
+
+
+                <button
+                    class="stock-action stock-out"
+                    onclick="openStockModal(
+                        ${product.id},
+                        '${escapeProductName(product.product_name)}',
+                        ${product.stock_quantity},
+                        'out'
+                    )"
+                >
+                    − Stock Out
+                </button>
+
+            </td>
+
+        `;
+
+    stockTableBody.appendChild(row);
+  });
+}
+
+// =========================
+// Get Stock Status
+// =========================
+
+function getStockStatus(product) {
+  const stock = Number(product.stock_quantity);
+
+  const minimum = Number(product.minimum_stock);
+
+  // Out of Stock
+
+  if (stock === 0) {
+    return {
+      text: "Out of Stock",
+      className: "status-out-stock",
+    };
+  }
+
+  // Low Stock
+
+  if (stock <= minimum) {
+    return {
+      text: "Low Stock",
+      className: "status-low-stock",
+    };
+  }
+
+  // In Stock
+
+  return {
+    text: "In Stock",
+    className: "status-in-stock",
+  };
+}
+
+// =========================
+// Load Categories
+// =========================
+
+async function loadCategories() {
+  try {
+    const response = await fetch("/api/categories");
+
+    if (!response.ok) {
+      throw new Error("Failed to load categories");
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || "Failed to load categories");
+    }
+
+    const categories = result.categories;
+
+    categoryFilter.innerHTML = `
+            <option value="">
+                All Categories
+            </option>
+        `;
+
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+
+      option.value = category.id;
+
+      option.textContent = category.name;
+
+      categoryFilter.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading categories:", error);
+  }
+}
+
+// =========================
+// Search Stock
+// =========================
+
+searchStock.addEventListener("input", filterStock);
+
+// =========================
+// Category Filter
+// =========================
+
+categoryFilter.addEventListener("change", filterStock);
+
+// =========================
+// Filter Stock
+// =========================
+
+function filterStock() {
+  const searchValue = searchStock.value.toLowerCase().trim();
+
+  const selectedCategory = categoryFilter.value;
+
+  const filteredProducts = stockData.filter((product) => {
+    // Search
+
+    const productName = String(product.product_name).toLowerCase();
+
+    const sku = String(product.sku).toLowerCase();
+
+    const categoryName = String(product.category_name).toLowerCase();
+
+    const matchesSearch =
+      productName.includes(searchValue) ||
+      sku.includes(searchValue) ||
+      categoryName.includes(searchValue);
+
+    // Category
+
+    const matchesCategory =
+      selectedCategory === "" ||
+      String(product.category_id) === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  renderStock(filteredProducts);
+}
+
+// =========================
+// Escape Product Name
+// =========================
+
+function escapeProductName(name) {
+  return String(name).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+// =========================
+// Open Stock Modal
+// =========================
+
+function openStockModal(productId, productName, stock, action) {
+  stockProductId.value = productId;
+
+  stockProductName.value = productName;
+
+  currentStock.value = stock;
+
+  stockQuantity.value = "";
+
+  stockActionType.value = action;
+
+  if (action === "in") {
+    stockModalTitle.textContent = "Add Stock";
+
+    saveStockBtn.textContent = "+ Add Stock";
+
+    saveStockBtn.className = "save-btn stock-save-in";
+  } else {
+    stockModalTitle.textContent = "Remove Stock";
+
+    saveStockBtn.textContent = "− Remove Stock";
+
+    saveStockBtn.className = "save-btn stock-save-out";
+  }
+
+  // Show modal
+
+  stockModalElement.classList.add("show");
+
+  // Focus quantity input
+
+  setTimeout(() => {
+    stockQuantity.focus();
+  }, 100);
+}
+
+// =========================
+// Close Stock Modal
+// =========================
+
+function closeStockModal() {
+  stockModalElement.classList.remove("show");
+}
+
+// =========================
+// Close Modal When Clicking Outside
+// =========================
+
+stockModalElement.addEventListener("click", function (event) {
+  if (event.target === stockModalElement) {
+    closeStockModal();
+  }
+});
+
+// =========================
+// Close Modal With Escape
+// =========================
+
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape" && stockModalElement.classList.contains("show")) {
+    closeStockModal();
+  }
+});
+
+// =========================
+// Save Stock Adjustment
+// =========================
+
+saveStockBtn.addEventListener("click", async function () {
+  const productId = stockProductId.value;
+
+  const quantity = Number(stockQuantity.value);
+
+  const action = stockActionType.value;
+
+  // Validate Quantity
+
+  if (!quantity || quantity <= 0) {
+    alert("Please enter a valid quantity.");
+
+    return;
+  }
+
+  // Prevent Negative Stock
+
+  if (action === "out" && quantity > Number(currentStock.value)) {
+    alert("Stock Out quantity cannot be greater than current stock.");
+
+    return;
+  }
+
+  try {
+    saveStockBtn.disabled = true;
+
+    const response = await fetch(`/api/stock/${productId}`, {
+      method: "PUT",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        quantity: quantity,
+
+        action: action,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert(result.message || "Stock update failed.");
+
+      return;
+    }
+
+    alert(result.message);
+
+    // Close Modal
+
+    closeStockModal();
+
+    // Reload Stock
+
+    await loadStock();
+  } catch (error) {
+    console.error("Stock update error:", error);
+
+    alert("Something went wrong while updating stock.");
+  } finally {
+    saveStockBtn.disabled = false;
+  }
+});
+
+// =========================
+// Page Load
+// =========================
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadCategories();
+
+  loadStock();
+});
+
+
+  </script>
+</html>

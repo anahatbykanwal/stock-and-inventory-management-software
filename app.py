@@ -1,12 +1,9 @@
-import os
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 
-# Yeh line templates folder ka exact absolute path set karti hai
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__)
 
 # Secret Key
 app.config["SECRET_KEY"] = config.SECRET_KEY
@@ -146,8 +143,10 @@ def login():
             if check_password_hash(user["password"], password):
 
                 # Create Session
-                session["user_id"] = user["id"]
-                session["username"] = user["username"]
+                session["user_id"] = user["id"]         
+                session["username"] = user["username"]          
+                session["fullname"] = user["fullname"]          
+
 
                 return jsonify({"success": True, "message": "Login successful."})
 
@@ -179,11 +178,9 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("home"))
 
-    full_name = session["username"]
+    full_name = session["fullname"]
 
     return render_template("dashboard.html", full_name=full_name)
-
-
 # =========================
 # Logout
 # =========================
@@ -400,8 +397,13 @@ def dashboard_stats():
 
 @app.route("/categories")
 def categories():
-    return render_template("categories.html")
 
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    full_name = session["fullname"]
+
+    return render_template("categories.html", full_name=full_name)
 
 # =========================
 # Get All Categories
@@ -741,7 +743,7 @@ def products():
     if "user_id" not in session:
         return redirect(url_for("home"))
 
-    full_name = session["username"]
+    full_name = session["fullname"]
 
     return render_template("products.html", full_name=full_name)
 
@@ -943,16 +945,1331 @@ def get_product(product_id):
 
         cursor.close()
         db.close()
+# =========================
+# Update Product
+# =========================
+
+
+@app.route("/api/products/<int:product_id>", methods=["PUT"])
+def update_product(product_id):
+
+        data = request.get_json()
+
+        product_name = data.get("product_name")
+        sku = data.get("sku")
+        category_id = data.get("category_id")
+        purchase_price = data.get("purchase_price")
+        selling_price = data.get("selling_price")
+        stock_quantity = data.get("stock_quantity")
+        minimum_stock = data.get("minimum_stock")
+        description = data.get("description","")
+
+        #validate required fields
+        if not product_name or not  sku or not category_id:
+
+            return(
+                jsonify(
+                    {
+                        "success":False, "message":"Product name , SKU nad category are required."
+                    }
+                ),
+                400,
+            )
+
+
+        db=get_db_connection()
+        cursor = db.cursor()
+
+
+        try:
+            #check if product exist
+            cursor.execute(
+                """
+                SELECT id
+                FROM products 
+                Where id = %s
+                """,
+                (product_id,),
+            )
+
+            product = cursor.fetchone()
+
+            if not product:
+
+                return jsonify({"success":False, "message":"Product not found."}),404
+
+            query = """
+                UPDATE products
+                            SET
+                                product_name = %s,
+                                sku = %s,
+                                category_id = %s,
+                                purchase_price = %s,
+                                selling_price = %s,
+                                stock_quantity = %s,
+                                minimum_stock = %s,
+                                description = %s
+                            WHERE id = %s
+                        """    
+
+            values = (
+                    product_name,
+                    sku,
+                    category_id,
+                    purchase_price,
+                    selling_price,
+                    stock_quantity,
+                    minimum_stock,
+                    description,
+                    product_id,
+                )
+
+            cursor.execute(query, values)
+
+            db.commit()
+
+            return (
+                jsonify({"success": True, "message": "Product updated successfully"}),
+                200,
+            )
+        
+        except mysql.connector.IntegrityError:
+
+            db.rollback()
+
+            return jsonify({"success":False, "message" : "SKU already exists."}), 409
+        
+        except mysql.connector.Error as error:
+
+            db.rollback()
+
+            return jsonify({"success": False, "message": str(error)}), 500
+
+        finally:
+
+            cursor.close()
+            db.close()
+
+# =========================
+# Delete Product
+# =========================
+
+@app.route("/api/products/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    try:
+
+
+        
+        #check if product exists
+        cursor.execute(
+            """
+            SELECT id
+            FROM products
+            Where id = %s
+            """,
+            (product_id,),
+        )
+
+        product =cursor.fetchone()
+
+        if not product:
+
+            return jsonify({"success": False, "message": "Product not found"}), 404
+
+        cursor.execute(
+            """
+            DELETE FROM products 
+            WHERE id = %s
+            """,
+            (product_id,),
+        )
+
+        db.commit()
+
+        return (
+            jsonify({"success":True, "message":"Product deleted successfully"}),
+            200,
+        )
+
+    except mysql.connector.IntegrityError:
+
+        db.rollback()
+
+        return(
+            jsonify(
+                {
+                    "success":False,
+                    "message": "product cannot be deleted because it is being used",
+                }
+                ),
+                409,
+        )
+    
+    except mysql.connector.Error as error:
+
+        db.rollback()
+        
+        return jsonify({"success":False,"message":str(error)}), 500
+        
+    finally:
+
+        cursor.close()
+        db.close()
+
+
+# =========================
+# Stock Page
+# =========================
+
+@app.route("/stock")
+def stock():
+
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    full_name = session["fullname"]
+
+    return render_template("stock.html",full_name = full_name)
+
+
+
+# =========================
+# Stock API
+# =========================
+
+
+@app.route("/api/stock",methods=["GET"])
+def get_stock():
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+        SELECT 
+            products.id,
+            products.product_name,
+            products.sku,
+            products.category_id,
+            categories.name AS category_name,
+            products.stock_quantity,
+            products.minimum_stock
+        FROM products
+            INNER JOIN categories
+            ON products.category_id = categories.id
+            ORDER BY products.id DESC
+    """
+
+    try:
+
+        cursor.execute(query)
+
+        stock = cursor.fetchall()
+
+        return jsonify({"success":True, "stock": stock}),200
+
+    except mysql.connector.Error as error:
+
+        return jsonify({"success":False, "message": str(error)}),500
+
+    finally:
+
+        cursor.close()
+        db.close()
+
+
+# =========================
+# Update Stock
+# =========================
+
+# =========================
+# Update Stock
+# =========================
+
+
+@app.route("/api/stock/<int:product_id>", methods=["PUT"])
+def update_stock(product_id):
+
+    data = request.get_json()
+
+    quantity = data.get("quantity")
+    action = data.get("action")
+
+    # Validate quantity
+    if quantity is None:
+        return jsonify({"success": False, "message": "Quantity is required"}), 400
+
+    try:
+        quantity = int(quantity)
+    except (TypeError, ValueError):
+        return (
+            jsonify({"success": False, "message": "Quantity must be a valid number."}),
+            400,
+        )
+
+    if quantity <= 0:
+        return (
+            jsonify(
+                {"success": False, "message": "Quantity must be greater than zero."}
+            ),
+            400,
+        )
+
+    # Validate action
+    if action not in ["in", "out"]:
+        return jsonify({"success": False, "message": "Invalid stock action."}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        # Get current stock
+        cursor.execute(
+            """
+            SELECT
+                id,
+                product_name,
+                stock_quantity
+            FROM products
+            WHERE id = %s
+            """,
+            (product_id,),
+        )
+
+        product = cursor.fetchone()
+
+        if not product:
+            return jsonify({"success": False, "message": "Product not found."}), 404
+
+        current_stock = int(product["stock_quantity"])
+
+        # Stock In / Out Logic
+        if action == "in":
+            new_stock = current_stock + quantity
+            message = f"{quantity} units added successfully"
+        else:
+            if quantity > current_stock:
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": "Stock out quantity exceeds current stock.",
+                        }
+                    ),
+                    400,
+                )
+            new_stock = current_stock - quantity
+            message = f"{quantity} units removed successfully"
+
+        # Update database
+        cursor.execute(
+            """
+            UPDATE products
+            SET stock_quantity = %s
+            WHERE id = %s
+            """,
+            (new_stock, product_id),
+        )
+        db.commit()
+
+        return (
+            jsonify({"success": True, "message": message, "new_stock": new_stock}),
+            200,
+        )
+
+    except mysql.connector.Error as error:
+        if db:
+            db.rollback()
+        return jsonify({"success": False, "message": str(error)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+# =========================
+# Customers
+# =========================
 
 
 
 
+@app.route("/customers")
+def customers():
+
+    if "user_id" not in session:
+        return redirect(url_for ("home"))
+
+    full_name = session["fullname"]
+
+    return render_template("customers.html",full_name=full_name)
+# =========================
+# GET — Load all customers
+# =========================
+
+@app.route("/api/customers",methods=["GET"])
+def get_customers():
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+
+        cursor.execute("""
+        SELECT
+            id,
+            customer_name,
+            phone,
+            email,
+            address,
+            created_at,
+            updated_at
+        FROM customers
+        ORDER BY Id DESC
+        """
+        )
+
+        customers = cursor.fetchall()
+
+        return jsonify({"success":True , "customers":customers}), 200
+
+    except mysql.connector.Error as error:
+
+        return jsonify({"success":False, "message":str(error)}), 500
+
+    finally:
+
+        cursor.close()
+        db.close()
+
+# =========================
+# POST — Add Customer
+# =========================
+@app.route("/api/customers", methods=["POST"])
+def add_customer():
+
+        data = request.get_json()
+
+        customer_name = data.get("customer_name")
+        phone = data.get("phone")
+        email = data.get("email")
+        address = data.get("address")
+
+        if not customer_name or not customer_name.strip():
+
+            return jsonify({"success": False, "message": "Customer name is required."}), 400
+
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        try:
+
+            cursor.execute(
+                """
+            INSERT INTO customers
+            (
+                customer_name,
+                phone,
+                email,
+                address
+            )
+            VALUES (%s,%s,%s,%s)    
+            """,
+                (customer_name.strip(),phone,email,address),
+            )
+
+            db.commit()
+
+            return(
+                jsonify({"success": True,"message":"Customer added successfully."}),
+                201,
+            )
+
+        except mysql.connector.Error as error:
+
+            db.rollback()
+
+            return jsonify({"success":False, "message":str(error)}),500
+
+        finally:
+
+            cursor.close()
+            db.close()
+
+# =========================
+# PUT — Update Customer
+# =========================
+@app.route("/api/customers/<int:customer_id>",methods=["PUT"])
+def update_customer(customer_id):
+
+    data = request.get_json()
+
+    customer_name = data.get("customer_name")
+    phone = data.get("phone")
+    email = data.get("email")
+    address = data.get("address")
+
+    if not customer_name or not customer_name.strip():
+
+        return jsonify({"success":False, "message":"Customer name is required."}),400
+
+    db =get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+
+        #check customer exists
+
+        cursor.execute(
+            """
+            SELECT id 
+            FROM customers
+            WHERE id =%s
+        """,
+            (customer_id,),
+        )
+        customer = cursor.fetchone()
+
+        if not customer:
+            return jsonify({"success":False , "message":"Customer not found. "}),404
+
+        #update customer
+
+        cursor.execute(
+            """
+        UPDATE customers
+
+        SET 
+            customer_name = %s,
+            phone = %s,
+            email = %s,
+            address = %s
+
+        WHERE id = %s    
+        """,
+            (customer_name.strip(),phone, email, address, customer_id),
+        )
+
+        db.commit()
+
+        return(
+            jsonify({"success":True, "message": "Customer updated successfully."}),
+            200,
+        )
+
+    except mysql.connector.Error as error:  # Fixed from mysql.connection.Error
+
+        db.rollback()
+
+        return jsonify({"success":False, "message":str(error)}),500
+
+    finally:
+
+        cursor.close()
+        db.close()
+
+ 
+
+    
+
+# =========================
+# Delete Customer
+# =========================
+
+@app.route("/api/customers/<int:customer_id>", methods=["DELETE"])
+def delete_customer(customer_id):
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    try:
+
+        #check if customer exists
+        cursor.execute(
+            """
+            SELECT id
+            FROM customers
+            Where id = %s
+            """,
+                (customer_id,),
+        )
+
+        customer = cursor.fetchone()
+        if not customer:
+            return jsonify({"success":False, "message":"Customer not found."}),404
+
+        #delete customer
+        cursor.execute(
+            """
+            DELETE FROM customers
+            WHERE id = %s
+            """,
+            (customer_id,),
+        )
+
+        db.commit()
+
+        return(
+            jsonify({"success":True, "message":"Customer deleted successfully."}),
+            200,
+        )
+
+    except mysql.connector.Error as error:
+
+        db.rollback()
+
+        return jsonify({"success":False, "message":str(error)}),500
+
+    finally:
+        cursor.close()
+        db.close()
+
+# =========================
+# Sales
+# =========================
+@app.route("/sales")
+def sales():
+
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    full_name = session["fullname"]
+
+    return render_template("sales.html", full_name=full_name)
+
+
+# ===============================
+# CREATE SALE
+# ===============================
+
+
+@app.route("/api/sales", methods=["POST"])
+def create_sale():
+
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Please login first."}), 401
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"success": False, "message": "No sale data received."}), 400
+
+    customer_id = data.get("customer_id")
+    total_amount = data.get("total_amount", 0)
+    discount = data.get("discount", 0)
+    final_amount = data.get("final_amount", 0)
+    items = data.get("items", [])
+
+    # ===============================
+    # BASIC VALIDATION
+    # ===============================
+
+    if not items:
+        return (
+            jsonify(
+                {"success": False, "message": "Sale must contain at least one product."}
+            ),
+            400,
+        )
+
+    try:
+
+        total_amount = float(total_amount)
+        discount = float(discount)
+        final_amount = float(final_amount)
+
+    except (TypeError, ValueError):
+
+        return jsonify({"success": False, "message": "Invalid sale amount."}), 400
+
+    if total_amount < 0 or discount < 0 or final_amount < 0:
+
+        return (
+            jsonify({"success": False, "message": "Sale amounts cannot be negative."}),
+            400,
+        )
+
+    if discount > total_amount:
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Discount cannot be greater than subtotal.",
+                }
+            ),
+            400,
+        )
+
+    db = None
+    cursor = None
+
+    try:
+
+        # ===============================
+        # DATABASE CONNECTION
+        # ===============================
+
+        db = get_db_connection()
+
+        cursor = db.cursor(dictionary=True)
+
+        # ===============================
+        # CHECK CUSTOMER
+        # ===============================
+
+        if customer_id:
+
+            cursor.execute(
+                """
+                SELECT id
+                FROM customers
+                WHERE id = %s
+                """,
+                (customer_id,),
+            )
+
+            customer = cursor.fetchone()
+
+            if not customer:
+
+                return (
+                    jsonify({"success": False, "message": "Customer not found."}),
+                    404,
+                )
+
+        # ===============================
+        # CHECK PRODUCTS + STOCK
+        # ===============================
+
+        checked_items = []
+
+        calculated_total = 0
+
+        for item in items:
+
+            product_id = item.get("product_id")
+            quantity = item.get("quantity")
+
+            if not product_id or not quantity:
+
+                db.rollback()
+
+                return jsonify({"success": False, "message": "Invalid sale item."}), 400
+
+            try:
+
+                product_id = int(product_id)
+                quantity = int(quantity)
+
+            except (TypeError, ValueError):
+
+                db.rollback()
+
+                return (
+                    jsonify(
+                        {"success": False, "message": "Invalid product or quantity."}
+                    ),
+                    400,
+                )
+
+            if quantity <= 0:
+
+                db.rollback()
+
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": "Quantity must be greater than zero.",
+                        }
+                    ),
+                    400,
+                )
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    product_name,
+                    selling_price,
+                    stock_quantity
+                FROM products
+                WHERE id = %s
+                FOR UPDATE
+                """,
+                (product_id,),
+            )
+
+            product = cursor.fetchone()
+
+            if not product:
+
+                db.rollback()
+
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": f"Product with ID {product_id} not found.",
+                        }
+                    ),
+                    404,
+                )
+
+            available_stock = int(product["stock_quantity"] or 0)
+
+            if quantity > available_stock:
+
+                db.rollback()
+
+                return (
+                    jsonify(
+                        {
+                            "success": False,
+                            "message": f"Only {available_stock} units of "
+                            f"{product['product_name']} are available.",
+                        }
+                    ),
+                    400,
+                )
+
+            unit_price = float(product["selling_price"] or 0)
+
+            subtotal = unit_price * quantity
+
+            calculated_total += subtotal
+
+            checked_items.append(
+                {
+                    "product_id": product["id"],
+                    "quantity": quantity,
+                    "unit_price": unit_price,
+                    "subtotal": subtotal,
+                }
+            )
+
+        # ===============================
+        # VERIFY TOTAL
+        # ===============================
+
+        calculated_final = calculated_total - discount
+
+        if abs(calculated_final - final_amount) > 0.01:
+
+            db.rollback()
+
+            return jsonify({"success": False, "message": "Sale total is invalid."}), 400
+
+        # ===============================
+        # CREATE SALE
+        # ===============================
+
+        cursor.execute(
+            """
+            INSERT INTO sales
+                (
+                    customer_id,
+                    total_amount,
+                    discount,
+                    final_amount
+                )
+            VALUES
+                (%s, %s, %s, %s)
+            """,
+            (customer_id, calculated_total, discount, calculated_final),
+        )
+
+        sale_id = cursor.lastrowid
+
+        # ===============================
+        # CREATE SALE ITEMS
+        # ===============================
+
+        for item in checked_items:
+
+            cursor.execute(
+                """
+                INSERT INTO sale_items
+                    (
+                        sale_id,
+                        product_id,
+                        quantity,
+                        unit_price,
+                        subtotal
+                    )
+                VALUES
+                    (%s, %s, %s, %s, %s)
+                """,
+                (
+                    sale_id,
+                    item["product_id"],
+                    item["quantity"],
+                    item["unit_price"],
+                    item["subtotal"],
+                ),
+            )
+
+            # ===============================
+            # DEDUCT STOCK
+            # ===============================
+
+            cursor.execute(
+                """
+                UPDATE products
+                SET stock_quantity =
+                    stock_quantity - %s
+                WHERE id = %s
+                """,
+                (item["quantity"], item["product_id"]),
+            )
+
+        # ===============================
+        # COMMIT TRANSACTION
+        # ===============================
+
+        db.commit()
+
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Sale completed successfully.",
+                    "sale_id": sale_id,
+                }
+            ),
+            201,
+        )
+
+    except mysql.connector.Error as error:
+
+        if db:
+            db.rollback()
+
+        print("Create sale database error:", error)
+
+        return (
+            jsonify(
+                {"success": False, "message": "Database error while creating sale."}
+            ),
+            500,
+        )
+
+    except Exception as error:
+
+        if db:
+            db.rollback()
+
+        print("Create sale error:", error)
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Something went wrong while creating the sale.",
+                }
+            ),
+            500,
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+ 
+# ===============================
+# SALES HISTORY PAGE
+# ===============================
 
 
 
 
+@app.route("/sales-history")
+def sales_history():
+
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    full_name = session["fullname"]
+
+    return render_template("sales-history.html", full_name=full_name)
 
 
+# ===============================
+# GET SALES HISTORY
+# ===============================
+
+
+@app.route("/api/sales", methods=["GET"])
+def get_sales():
+
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Please login first."}), 401
+
+    db = None
+    cursor = None
+
+    try:
+
+        db = get_db_connection()
+
+        cursor = db.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                s.id,
+                s.customer_id,
+
+                COALESCE(
+                    c.customer_name,
+                    'Walk-in Customer'
+                ) AS customer_name,
+
+                s.total_amount,
+                s.discount,
+                s.final_amount,
+                s.created_at
+
+            FROM sales s
+
+            LEFT JOIN customers c
+                ON s.customer_id = c.id
+
+            ORDER BY s.created_at DESC
+            """)
+
+        sales = cursor.fetchall()
+
+        return jsonify({"success": True, "sales": sales}), 200
+
+    except mysql.connector.Error as error:
+
+        print("Sales history database error:", error)
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Database error while loading sales history.",
+                }
+            ),
+            500,
+        )
+
+    except Exception as error:
+
+        print("Sales history error:", error)
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Something went wrong while loading sales history.",
+                }
+            ),
+            500,
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+
+# ===============================
+# GET SINGLE SALE DETAILS
+# ===============================
+
+
+@app.route("/api/sales/<int:sale_id>", methods=["GET"])
+def get_sale_details(sale_id):
+
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Please login first."}), 401
+
+    db = None
+    cursor = None
+
+    try:
+
+        db = get_db_connection()
+
+        cursor = db.cursor(dictionary=True)
+
+        # ===============================
+        # SALE INFORMATION
+        # ===============================
+
+        cursor.execute(
+            """
+            SELECT
+                s.id,
+                s.customer_id,
+
+                COALESCE(
+                    c.customer_name,
+                    'Walk-in Customer'
+                ) AS customer_name,
+
+                s.total_amount,
+                s.discount,
+                s.final_amount,
+                s.created_at
+
+            FROM sales s
+
+            LEFT JOIN customers c
+                ON s.customer_id = c.id
+
+            WHERE s.id = %s
+            """,
+            (sale_id,),
+        )
+
+        sale = cursor.fetchone()
+
+        if not sale:
+
+            return jsonify({"success": False, "message": "Sale not found."}), 404
+
+        # ===============================
+        # SALE ITEMS
+        # ===============================
+
+        cursor.execute(
+            """
+            SELECT
+                si.id,
+                si.product_id,
+
+                p.product_name,
+                p.sku,
+
+                si.quantity,
+                si.unit_price,
+                si.subtotal
+
+            FROM sale_items si
+
+            INNER JOIN products p
+                ON si.product_id = p.id
+
+            WHERE si.sale_id = %s
+
+            ORDER BY si.id ASC
+            """,
+            (sale_id,),
+        )
+
+        items = cursor.fetchall()
+
+        return jsonify({"success": True, "sale": sale, "items": items}), 200
+
+    except mysql.connector.Error as error:
+
+        print("Sale details database error:", error)
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Database error while loading sale details.",
+                }
+            ),
+            500,
+        )
+
+    except Exception as error:
+
+        print("Sale details error:", error)
+
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Something went wrong while loading sale details.",
+                }
+            ),
+            500,
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if db:
+            db.close()
+
+# =========================
+# Settings Page
+# =========================
+
+
+@app.route("/settings")
+def settings():
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    full_name = session["fullname"]
+    return render_template("settings.html", full_name=full_name)
+
+
+# ========================================
+# SETTINGS - GET PROFILE
+# ========================================
+
+
+@app.route("/api/settings/profile", methods=["GET"])
+def get_profile():
+
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Please login first."}), 401
+
+    db = None
+    cursor = None
+
+    try:
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT id, fullname, username, email, phone
+            FROM users
+            WHERE id = %s
+            """,
+            (session["user_id"],),
+        )
+
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({"success": False, "message": "User not found."}), 404
+
+        return jsonify({"success": True, "user": user}), 200
+
+    except mysql.connector.Error as error:
+        return jsonify({"success": False, "message": str(error)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
+
+# ========================================
+# SETTINGS - UPDATE PROFILE
+# ========================================
+
+
+@app.route("/api/settings/profile", methods=["PUT"])
+def update_profile():
+
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Please login first."}), 401
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"success": False, "message": "No data received."}), 400
+
+    fullname = data.get("fullName", "").strip()
+    username = data.get("username", "").strip()
+    email = data.get("email", "").strip()
+    phone = data.get("phone", "").strip()
+
+    if not fullname or not username or not email:
+        return (
+            jsonify(
+                {"success": False, "message": "Full name, username, and email are required."}
+            ),
+            400,
+        )
+
+    db = None
+    cursor = None
+
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        # Check duplicate username or email
+        cursor.execute(
+            """
+            SELECT id FROM users
+            WHERE (username = %s OR email = %s) AND id != %s
+            """,
+            (username, email, session["user_id"]),
+        )
+
+        existing = cursor.fetchone()
+
+        if existing:
+            return (
+                jsonify({"success": False, "message": "Username or email already exists."}),
+                409,
+            )
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET fullname = %s, username = %s, email = %s, phone = %s
+            WHERE id = %s
+            """,
+            (fullname, username, email, phone, session["user_id"]),
+        )
+
+        db.commit()
+
+        # Update session
+        session["username"] = username
+        session["fullname"] = fullname
+
+        return (
+            jsonify({"success": True, "message": "Profile updated successfully."}),
+            200,
+        )
+
+    except mysql.connector.Error as error:
+        if db:
+            db.rollback()
+        return jsonify({"success": False, "message": str(error)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
+
+
+# =========================
+# Run Flask
+# =========================
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
+
+
+    #deploying
+# git remote set-url origin https://github.com/eshakanwal12/sims.git
+# git add .
+# git commit -m "Ready for deployment"
+
+
+# git branch -M main
+# git push -u origin main --force
